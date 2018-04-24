@@ -3,8 +3,9 @@
 
 
 //void CreateArray(char *fileName, int length)
+int CheckFileExist(char *fileName);
 void SetRows(char *fileName, int *dim);
 void SetColumns(char *fileName, int *dim);
-int CheckFileExist(char *fileName);
+void CreateArray(char *fileName, char ***dataMatrix);
 
 #endif

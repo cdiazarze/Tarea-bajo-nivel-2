@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "estructura.h"
-
+#define split ' '
 #define FILE_LENGTH 30
 
 
@@ -37,11 +37,20 @@ void -w(FILE *in,FILE *out, char *oracion, char *codificado, char *nombre)
 	}
 	fclose(archivo);
 	fclose(in);	
-}
-
-void CreateArray(char *fileName, int length){
-	 
 }*/
+
+int CheckFileExist(char *fileName){
+	FILE *in;
+	fileName[strlen(fileName)-1]=0;
+	if (!(in=fopen(fileName,"r"))){
+ 		fprintf(stderr, "%s %s %s", "Error: Archivo", fileName, "no existe\n");
+		return 0;
+	}
+	else{
+		fclose(in);
+		return 1;
+	}
+}
 
 void SetRows(char *fileName, int *dim){
 //Se lee el archivo por char de manera de tener el largo de las lineas y la cantidad de estas.	
@@ -65,7 +74,6 @@ void SetColumns(char *fileName, int *dim){
 	FILE *in;
 	char c;
 	dim[1]=0;
-	char split=' ';
 	in=fopen(fileName,"r");
 	while((c=fgetc(in))!='\n'){
 		if (c==split) dim[1]+=1;
@@ -74,17 +82,34 @@ void SetColumns(char *fileName, int *dim){
 	fclose(in);
 }
 
-int CheckFileExist(char *fileName){
+
+void CreateArray(char *fileName, char ***dataMatrix){
+	
+	char c;
 	FILE *in;
-	fileName[strlen(fileName)-1]=0;
-	if (!(in=fopen(fileName,"r"))){
- 		fprintf(stderr, "%s %s %s", "Error: Archivo", fileName, "no existe\n");
-		return 0;
-	}
-	else{
-		fclose(in);
-		return 1;
-	}
+	int i=0;
+	int j=0;
+	int z=0;
+	int size=0;
+	in=fopen(fileName,"r");
+	while ((c=fgetc(in))!=EOF){
+		if (c!=split && c!='\n'){
+ 			dataMatrix[i][j][z]=c;
+			size+=1;
+			z+=1;
+		}
+		if (c==split){
+			dataMatrix[i][j][z+1]=0;
+			dataMatrix[i][j]=realloc(dataMatrix[i][j], (strlen(dataMatrix[i][j])+1)*sizeof(char));
+			z=0;
+			j+=1;
+		}
+		if (c=='\n'){
+			z=0;
+			j=0;
+			i+=1;
+		}	
+	}		
 }
 
 
@@ -97,23 +122,37 @@ int main(int argc,char **argv)
 	FILE *out;
 	char *fileName = malloc(FILE_LENGTH*sizeof(char));
 	int dim[2]={0};
-	
+	 
+
 	
 
 	printf ("\nIngrese nombre de archivo a analizar:\n");
 	fgets(fileName, FILE_LENGTH-1, stdin);
 	if (!CheckFileExist(fileName)) return 1;
 	for (int i=0; i<nf0;i++) ff0[i](fileName,dim);
-	//SetRows(fileName,dim);	
-	//SetColumns(fileName,dim);
+	fprintf(stderr, "%d\n", dim[0]);
+	fprintf(stderr, "%d\n", dim[1]);
+	
+	//Incializar arreglo de datos
+	char *** dataMatrix=malloc(dim[0]*dim[1]*FILE_LENGTH*sizeof(char));
+	for (int i=0; i<dim[0]; i++){
+		dataMatrix[i]=malloc(dim[1]*FILE_LENGTH*sizeof(char));
+		for (int j=0; j<dim[1];j++) dataMatrix[i][j]=malloc(FILE_LENGTH*sizeof(char));
+ 	}
+	CreateArray(fileName, dataMatrix);
 
 
 	if (argc>1) out=fopen(argv[1],"w");	
-
+	
+	for (int i=0; i<dim[0]; i++){
+	 for (int j=0; j<dim[1]; j++) printf("%s,",dataMatrix[i][j]);
+	 printf("%c",'\n');	
+	}
 	fprintf(out, "Lineas: %d\n", dim[0]);
 	fprintf(out, "Largo: %d\n", dim[1]);
 
 	free(fileName);
+	free(dataMatrix);
 
 /*
 

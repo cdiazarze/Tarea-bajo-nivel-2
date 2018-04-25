@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "estructura.h"
 #define split ' '
 #define FILE_LENGTH 30
+#define largeColumn "%-15s"
+#define shortColumn "%-4s"
 #define colpj 1
 #define colpt 2 
 #define colpg 3
@@ -133,17 +136,39 @@ void SetColumnNames(char ***dataMatrix,int *dim){
 	for (int i=0; i<dim[1]; i++) for (int j=0; j<(int)strlen(columnName[i])+1; j++) dataMatrix[0][i][j]=columnName[i][j];
 }
 
-void w(char ***dataMatrix, char *outfileName, int *dim){
+void w(char ***dataMatrix, char *outfileName, int *dim, int *maxPrint){
 	FILE *out;
 	if (outfileName[0]!=0) out=fopen(outfileName,"w");
 	else out=stdout;
-	for (int i=0; i<dim[0]; i++){
+	for (int i=0; i<*maxPrint; i++){
 		for (int j=0; j<dim[1]; j++){
- 			fprintf(out, "%15s", dataMatrix[i][j]);
+ 			if (j==0 || j==colpt) fprintf(out, largeColumn, dataMatrix[i][j]);
+			else fprintf(out, shortColumn, dataMatrix[i][j]);
 			if (j<dim[1]-1) fprintf(out, "%c", ' ');
 			else fprintf(out, "%c", '\n');
 		}	 	
 	}
+}
+
+/*void n(int max,int *dim, int *maxPrint)
+{
+	
+}*/
+
+void g(char ***dataMatrix, int *dim){
+	
+	for (int i=1; i<dim[0]; i++){
+		int z=0;
+		int size=atoi(dataMatrix[i][colpt]);
+		if (size>0) {
+			dataMatrix[i][colpt]=realloc(dataMatrix[i][colpt],size*sizeof(char)+1);		
+ 			while (z<size){
+				dataMatrix[i][colpt][z]='0';
+				z++;
+			}
+		}
+		else dataMatrix[i][colpt][0]=0;	
+	}	 	
 }
 
 
@@ -155,9 +180,9 @@ int main(int argc,char **argv)
 	void (*ff0[])(char*, int*) = {SetRows,SetColumns};
 	char *fileName = malloc(FILE_LENGTH*sizeof(char));
 	int dim[2]={0};
-	char *outfileName = calloc(FILE_LENGTH,sizeof(char)); 
-
-	
+	char *outFileName = calloc(FILE_LENGTH,sizeof(char)); 
+	int maxPrint=0;
+	//int option=0;
 
 	printf ("\nIngrese nombre de archivo a analizar:\n");
 	fgets(fileName, FILE_LENGTH-1, stdin);
@@ -170,11 +195,43 @@ int main(int argc,char **argv)
 		dataMatrix[i]=malloc(dim[1]*FILE_LENGTH*sizeof(char));
 		for (int j=0; j<dim[1];j++) dataMatrix[i][j]=malloc(FILE_LENGTH*sizeof(char));
  	}
+	
 	CreateArray(fileName, dataMatrix,dim);
-	if (argc>2) w(dataMatrix,argv[1],dim);
-	else w(dataMatrix,outfileName,dim);
+	maxPrint=dim[0];
+	
+	/*while ((option = getopt (argc, argv, "w:gn:")) != -1)
+	    switch (option)
+	      {
+	      case 'w':
+		aflag = 1;
+		break;
+	      case 'b':
+		bflag = 1;
+		break;
+	      case 'c':
+		cvalue = optarg;
+		break;
+	      case '?':
+		if (optopt == 'c')
+		  fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+		else if (isprint (optopt))
+		  fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+		else
+		  fprintf (stderr,
+		           "Unknown option character `\\x%x'.\n",
+		           optopt);
+		return 1;
+	      default:
+		abort ();
+	      }*/
 
+			
+	g(dataMatrix,dim);	
+	if (argc>1) w(dataMatrix,argv[1],dim, &maxPrint);
+	else w(dataMatrix,outFileName,dim, &maxPrint);
+	
 	free(fileName);
+	free(outFileName);
 	free(dataMatrix);
 
 /*

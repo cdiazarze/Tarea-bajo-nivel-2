@@ -8,6 +8,6 @@ void SetRows(char *fileName, int *dim);
 void SetColumns(char *fileName, int *dim);
 void CreateArray(char *fileName, char ***dataMatrix, int *dim);
 void SetColumnNames(char ***dataMatrix,int *dim);
-void w(char ***dataMatrix, char *outfileName, int *dim);
-
+void w(char ***dataMatrix, char *outfileName, int *dim, int *maxPrint);
+void g(char ***dataMatrix, int *dim);
 #endif

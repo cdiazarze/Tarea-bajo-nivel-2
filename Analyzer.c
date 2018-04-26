@@ -5,7 +5,7 @@
 #include "estructura.h"
 #define split ' '
 #define FILE_LENGTH 30
-#define largeColumn "%-15s"
+#define largeColumn "%-25s"
 #define shortColumn "%-4s"
 #define colpj 1
 #define colpt 2 
@@ -18,38 +18,6 @@
 #define colgc 9
 #define colgl 10
 
-/*void cifrado_desplazamiento(int numero, char *linea)
-{
-	for (int i=0; linea[i]!='\0';i++) linea[i]+=numero;	
-}
-
-
-
-
-void -w(FILE *in,FILE *out, char *oracion, char *codificado, char *nombre)
-{
-
-	char limpio[MAX_LENGTH];
-	for (int i=0; strlen(limpio); i++) limpio[i]='\0';	
-	if (!(in=fopen(nombre,"r"))) fprintf(stderr, "%s %s %s", "Error: Archivo", nombre, "no existe\n") ;
-	archivo=fopen("encriptado.txt","w");
-	strcpy(oracion,limpio);
-	strcpy(codificado,limpio);
-	while(fgets(oracion, MAX_LENGTH-1, in)!=0) 
-	{
-		strcpy(codificado,oracion);
-		Invertir_Caracteres(codificado);			
-		cifrado_desplazamiento(numero_desplazamiento,codificado);
-		negacion(codificado); //Negacion
-		XOR(codificado,CaractXor); //XOR
-		fprintf(archivo, "%s", codificado);
-		strcpy(oracion,limpio);
-		strcpy(codificado,limpio);
-		
-	}
-	fclose(archivo);
-	fclose(in);	
-}*/
 
 int CheckFileExist(char *fileName){
 	FILE *in;
@@ -79,7 +47,7 @@ void SetRows(char *fileName, int *dim){
  			dim[0]+=1;
 		}
 	}
-	dim[0]+=1;
+	dim[0]+=2;
 	fclose(in);
 }
 
@@ -106,11 +74,13 @@ void CreateArray(char *fileName, char ***dataMatrix,int *dim){
 	int size=0;
 	in=fopen(fileName,"r");
 	SetColumnNames(dataMatrix, dim);
+	
 	while ((c=fgetc(in))!=EOF){
 		if (c!=split && c!='\n'){
  			dataMatrix[i][j][z]=c;
 			size+=1;
 			z+=1;
+			
 		}
 		if (c==split){
 			dataMatrix[i][j][z+1]=0;
@@ -127,6 +97,12 @@ void CreateArray(char *fileName, char ***dataMatrix,int *dim){
 			i+=1;
 		}	
 	}
+	if (dataMatrix[i][0][0]!=0){
+		sprintf(dataMatrix[i][colpp], "%d", atoi(dataMatrix[i][colpj])-atoi(dataMatrix[i][colpg])-atoi(dataMatrix[i][colpe]));
+		sprintf(dataMatrix[i][colgc], "%d", atoi(dataMatrix[i][colgf])-atoi(dataMatrix[i][coldg]));
+		sprintf(dataMatrix[i][colgl], "%d", atoi(dataMatrix[i][colgf])-atoi(dataMatrix[i][colgv]));
+	}
+	
 	fclose(in);
 			
 }
@@ -140,6 +116,7 @@ void w(char ***dataMatrix, char *outfileName, int *dim, int *maxPrint){
 	FILE *out;
 	if (outfileName[0]!=0) out=fopen(outfileName,"w");
 	else out=stdout;
+
 	for (int i=0; i<*maxPrint; i++){
 		for (int j=0; j<dim[1]; j++){
  			if (j==0 || j==colpt) fprintf(out, largeColumn, dataMatrix[i][j]);
@@ -178,7 +155,7 @@ int main(int argc,char **argv)
 	//int (*ff[])(int, int) = {-w};
 	int nf0=2;
 	void (*ff0[])(char*, int*) = {SetRows,SetColumns};
-	char *fileName = malloc(FILE_LENGTH*sizeof(char));
+	char *fileName = calloc(FILE_LENGTH,sizeof(char));
 	int dim[2]={0};
 	char *outFileName = calloc(FILE_LENGTH,sizeof(char)); 
 	int maxPrint=0;
@@ -190,12 +167,11 @@ int main(int argc,char **argv)
 	for (int i=0; i<nf0;i++) ff0[i](fileName,dim);
 
 	//Incializar arreglo de datos
-	char *** dataMatrix=malloc(dim[0]*dim[1]*FILE_LENGTH*sizeof(char));
+	char *** dataMatrix=calloc(dim[0]*dim[1]*FILE_LENGTH,sizeof(char));
 	for (int i=0; i<dim[0]; i++){
-		dataMatrix[i]=malloc(dim[1]*FILE_LENGTH*sizeof(char));
-		for (int j=0; j<dim[1];j++) dataMatrix[i][j]=malloc(FILE_LENGTH*sizeof(char));
+		dataMatrix[i]=calloc(dim[1]*FILE_LENGTH,sizeof(char));
+		for (int j=0; j<dim[1];j++) dataMatrix[i][j]=calloc(FILE_LENGTH,sizeof(char));
  	}
-	
 	CreateArray(fileName, dataMatrix,dim);
 	maxPrint=dim[0];
 	
@@ -226,7 +202,7 @@ int main(int argc,char **argv)
 	      }*/
 
 			
-	g(dataMatrix,dim);	
+	//g(dataMatrix,dim);	
 	if (argc>1) w(dataMatrix,argv[1],dim, &maxPrint);
 	else w(dataMatrix,outFileName,dim, &maxPrint);
 	

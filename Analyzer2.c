@@ -64,7 +64,7 @@ void SetColumns(char *fileName, int *dim){
 }
 
 
-void CreateArray(char *fileName, char ***dataMatrix,int *dim, int *biggestName){
+void CreateArray(char *fileName, data dataMatrix,int *dim, int *biggestName){
 	
 	char c;
 	FILE *in;
@@ -164,6 +164,21 @@ void g(char ***dataMatrix, int *dim, int *maxPoint){
 	}	 	
 }
 
+typedef struct data{
+	char * Equipo;
+	unsigned char pj;
+	unsigned char puntos;
+	unsigned char pg;
+	unsigned char pe;
+	unsigned char dg;
+	unsigned char gf;
+	unsigned char gv;
+	unsigned char pp;
+	unsigned char gc;
+	unsigned char gl;
+
+} data;
+
 
 //int main()
 int main(int argc,char **argv)
@@ -183,12 +198,15 @@ int main(int argc,char **argv)
 	if (!CheckFileExist(fileName)) return 1;
 	for (int i=0; i<nf0;i++) ff0[i](fileName,dim);
 
-	//Incializar arreglo de datos
+	/*//Incializar arreglo de datos
 	char *** dataMatrix=calloc(dim[0]*dim[1]*FILE_LENGTH,sizeof(char));
 	for (int i=0; i<dim[0]; i++){
 		dataMatrix[i]=calloc(dim[1]*FILE_LENGTH,sizeof(char));
 		for (int j=0; j<dim[1];j++) dataMatrix[i][j]=calloc(FILE_LENGTH,sizeof(char));
- 	}
+ 	}*/
+
+	data dataMatrix;
+
 	CreateArray(fileName, dataMatrix,dim, &biggestName);
 	maxPrint=dim[0];
 	
@@ -210,8 +228,8 @@ int main(int argc,char **argv)
 	      }*/
 
 			
-	g(dataMatrix,dim, &maxPoint);
-	n(5,&maxPrint);	
+	//g(dataMatrix,dim, &maxPoint);
+	//n(5,&maxPrint);	
 	if (argc>2) w(dataMatrix,argv[2],dim, &maxPrint, &biggestName,&maxPoint);
 	else w(dataMatrix,outFileName,dim, &maxPrint,&biggestName, &maxPoint);
 	

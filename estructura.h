@@ -2,12 +2,16 @@
 #define ESTRUCTURA_H_
 
 
-//void CreateArray(char *fileName, int length)
 int CheckFileExist(char *fileName);
 void SetRows(char *fileName, int *dim);
 void SetColumns(char *fileName, int *dim);
-void CreateArray(char *fileName, char ***dataMatrix, int *dim);
+//void CreateArray(char *fileName, char ***dataMatrix, int *dim, int* biggestName);
+void CreateArray(char *fileName, data dataMatrix, int *dim, int* biggestName);
 void SetColumnNames(char ***dataMatrix,int *dim);
-void w(char ***dataMatrix, char *outfileName, int *dim, int *maxPrint);
-void g(char ***dataMatrix, int *dim);
+void SetColumnWidth(int *biggestName, char *stringLength, char *stringFormat);
+void w(char ***dataMatrix, char *outfileName, int *dim, int *maxPrint,int *biggestName, int *maxPoint);
+void n(int max, int *maxPrint);
+void g(char ***dataMatrix, int *dim,  int *maxPoint);
+struct data;
+
 #endif

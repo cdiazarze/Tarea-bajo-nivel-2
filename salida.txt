@@ -1,17 +1,6 @@
-Equipo                    pj   puntos                    pg   pe   dg   gf   gv   pp   gc   gl  
-AudaxItaliano             10   6                         1    3    -8   10   4   6    18   6   
-ColoColo                  10   19                        6    1    +5   16   7   3    11   9   
-CuricoUnido               10   8                         1    5    -2   15   6   4    17   9   
-DeportesAntofagasta       10   18                        5    3    +3   16   6   2    13   10  
-DeportesIquique           10   10                        3    1    -1   12   4   6    13   8   
-DeportesTemuco            10   7                         1    4    -9   7    2   5    16   5   
-Everton                   10   6                         2    0    -9   8    3   8    17   5   
-Huachipato                10   15                        4    3    +6   15   5   3    9    10  
-O'Higgins                 10   14                        4    2    4    16   6   4    12   10  
-Palestino                 10   12                        3    3    -1   14   5   4    15   9   
-SanLuis                   10   9                         2    3    -8   5    2   5    13   3   
-UdeConcepcion             10   20                        6    2    4    15   6   2    11   9   
-UnionEspanola             10   15                        4    3    1    17   6   3    16   11  
-UnionLaCalera             10   16                        5    1    3    15   7   4    12   8   
-UniversidadCatolica       10   27                        9    0    10   15   6   1    5    9   
-UniversidaddeChile        10   21                        7    0    2    17   7    3    15   10  
+Equipo     pj   puntos                                     pg   pe   dg   gf   gv   pp   gc   gl  
+Brasil     18   00000000000000000000000000000000000000000  12   5    30   41   16   1    11   25  
+Uruguay    18   0000000000000000000000000000000            9    4    12   32   5    5    20   27  
+Argentina  18   0000000000000000000000000000               7    7    3    19   11   4    16   8   
+Colombia   18   000000000000000000000000000                7    6    2    21   4    5    19   17  
+Peru       18   00000000000000000000000000                 7    5    1    27   2    6    26   25  

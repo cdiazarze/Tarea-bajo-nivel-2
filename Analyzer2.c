@@ -4,25 +4,23 @@
 #include <unistd.h>
 #include "estructura2.h"
 #define split ' '
+#define nFlags 5
+#define oFlag 0
+#define fFlag 1
+#define gFlag 2
+#define nFlag 3
+#define wFlag 4
 #define FILE_LENGTH 30
-#define largeColumn "%-25s"
-#define shortColumn "%-4d"
-#define colpj 1
-#define colpt 2 
-#define colpg 3
-#define colpe 4
-#define coldg 5
-#define colgf 6
-#define colgv 7
-#define colpp 8
-#define colgc 9
-#define colgl 10
+#define shortColumnD "%-4d"
+
 
 
 //Global var
 
 int largestName=0;
 int maxPoints=6;
+int dim[2]={0};
+
 
 int CheckFileExist(char *fileName){
 	FILE *in;
@@ -37,7 +35,7 @@ int CheckFileExist(char *fileName){
 	}
 }
 
-void SetRows(char *fileName, int *dim){
+void SetRows(char *fileName){
 //Se lee el archivo por char de manera de tener el largo de las lineas y la cantidad de estas.	
 //Esto se usará para definir el tamaño del arreglo de strings.
 	FILE *in;
@@ -56,7 +54,7 @@ void SetRows(char *fileName, int *dim){
 	fclose(in);
 }
 
-void SetColumns(char *fileName, int *dim){
+void SetColumns(char *fileName){
 	FILE *in;
 	char c;
 	dim[1]=0;
@@ -68,34 +66,12 @@ void SetColumns(char *fileName, int *dim){
 	fclose(in);
 }
 
+int GetColumnIndex(char *column){
+	char columnName[][7]={"pj", "puntos", "pg", "pe", "dg", "gf","gv", "pp", "gc", "gl"};
+	for (int i=0; i<dim[1]-1;i++) if(!strcmp(columnName[i],column)) return i;
+	return -1; 
+}		
 
-//set dataMatrix values
-void SetTeam(data dataMatrix[],int line, char *datum){
-	strcpy(dataMatrix[line].team, datum);
-}
-void SetPj(data dataMatrix[],int line, char *datum){
-	dataMatrix[line].pj=atoi(datum);
-}
-void SetPoints(data dataMatrix[],int line, char *datum){
-	dataMatrix[line].points=atoi(datum);
-	if (maxPoints<dataMatrix[line].points) maxPoints=dataMatrix[line].points;
-}
-void SetPg(data dataMatrix[],int line, char *datum){
-	dataMatrix[line].pg=atoi(datum);
-}
-void SetPe(data dataMatrix[],int line, char *datum){
-	dataMatrix[line].pe=atoi(datum);
-}
-void SetDg(data dataMatrix[],int line, char *datum){
-	dataMatrix[line].dg=atoi(datum);
-}
-void SetGf(data dataMatrix[],int line, char *datum){
-	dataMatrix[line].gf=atoi(datum);
-}
-
-void SetGv(data dataMatrix[],int line, char *datum){
-	dataMatrix[line].gv=atoi(datum);
-}
 
 //Get dataMatrix int values
 int GetPj(data dataMatrix[],int line){
@@ -133,55 +109,36 @@ int GetGl(data dataMatrix[],int line){
 
 
 
-void CreateArray(char *fileName, data dataMatrix[], void (*ff1[])(data[], int, char*)){
+void CreateArray(char *fileName, data dataMatrix[]){
 	FILE *in;
 	in=fopen(fileName,"r");
-	//void (*ff1[])(data[], unsigned char, char*) = {SetTeam,SetPj,SetPoints,SetPg,SetPe,SetDg,SetGf,SetGv};
-	char * datum = calloc(FILE_LENGTH, sizeof(char));
-	char * clean = calloc(FILE_LENGTH, sizeof(char));
-	char c;
-	int count= 0;
+	char *team = calloc(FILE_LENGTH, sizeof(char));
+	int pj, points, pg,pe,dg,gf,gv;
 	int line= 0;
-	int column= 0;
-	while ((c=fgetc(in))!=EOF){
-		if (c>32){
- 			datum[count]=c;
-			count+=1;
-		}
-		if (c==split){
-			datum[count+1]=0;
-			ff1[column](dataMatrix,line, datum);
-			if (count>largestName) largestName=count;
-			fprintf(stderr, "%s\n",datum);			
-			strcpy(datum,clean);
-			column+=1;
-			count=0;
-		}
-		if (c=='\n'){
-			ff1[column](dataMatrix,line, datum);
-			dataMatrix[line].pp=dataMatrix[line].pj-dataMatrix[line].pg-dataMatrix[line].pe;
-			dataMatrix[line].gc=dataMatrix[line].gf-dataMatrix[line].dg;
-			dataMatrix[line].gl=dataMatrix[line].gf-dataMatrix[line].gv;
-			line+=1;
-			column=0;
-			count=0;
-		}	
-			
+	while (fscanf(in, "%s %d %d %d %d %d %d %d", team, &pj, &points, &pg, &pe, &dg , &gf, &gv)!=EOF)	
+	{		
+		strcpy(dataMatrix[line].team,team);
+		if ((int)strlen(dataMatrix[line].team)>largestName) largestName=(int)strlen(dataMatrix[line].team);
+		dataMatrix[line].pj=pj;		
+		dataMatrix[line].points=points;
+		dataMatrix[line].pg=pg;
+		dataMatrix[line].pe=pe;
+		dataMatrix[line].dg=dg;
+		dataMatrix[line].gf=gf;
+		dataMatrix[line].gv=gv;
+		dataMatrix[line].pp=dataMatrix[line].pj-dataMatrix[line].pg-dataMatrix[line].pe;
+		dataMatrix[line].gc=dataMatrix[line].gf-dataMatrix[line].dg;
+		dataMatrix[line].gl=dataMatrix[line].gf-dataMatrix[line].gv;
+		dataMatrix[line].gbool=0;
+		dataMatrix[line].filterbool=1;
+		memset(team,0,FILE_LENGTH*sizeof(char));
+		line+=1;
 	}
-	free(datum);
-	free(clean);
-
+	free(team);
+	fclose(in);
 }
 
 
-
-
-
-
-void SetColumnNames(char ***dataMatrix,int *dim){
-	char columnName[11][7]={"Equipo","pj", "puntos", "pg", "pe", "dg", "gf","gv", "pp", "gc", "gl"};
-	for (int i=0; i<dim[1]; i++) for (int j=0; j<(int)strlen(columnName[i])+1; j++) dataMatrix[0][i][j]=columnName[i][j];
-}
 
 void SetColumnWidth(int *biggestName, char *stringFormat, char *type){
 	char *stringLength = calloc(4,sizeof(char));	
@@ -192,102 +149,199 @@ void SetColumnWidth(int *biggestName, char *stringFormat, char *type){
 	free(stringLength);
 }
 
-void w(data dataMatrix[], char *outfileName, int *dim, int *maxPrint, int (*ff2[])(data[],int)){
+void w(data dataMatrix[], char *outfileName, int *maxPrint, int (*ff2[])(data[],int)){
 	FILE *out;	
+	char columnName[][7]={"Equipo","pj", "puntos", "pg", "pe", "dg", "gf","gv", "pp", "gc", "gl"};
+	int shortColumn=3;	
 	if (outfileName[0]!=0) out=fopen(outfileName,"w");
-	else out=stderr;
-	char *clean = calloc(6,sizeof(char));	
+	else out=stdout;
 	char *stringFormat = calloc(6,sizeof(char));
+	int exist=0;
+	//Imprimir nombres de columnas
+	for (int i=0; i<dim[1]; i++){
+		if (i==0) SetColumnWidth(&largestName, stringFormat,"s");
+		else if (i==2) SetColumnWidth(&maxPoints, stringFormat, "s");		
+		else SetColumnWidth(&shortColumn, stringFormat,"s");		
+		fprintf(out, stringFormat, columnName[i]);
+		fprintf(out, "%c", ' ');		
+		if (i==dim[1]-1) fprintf(out, "%c",'\n');
+	}
+
+		
 	for (int i=0; i<*maxPrint; i++){
-			SetColumnWidth(&largestName, stringFormat,"s");
-			fprintf(out, stringFormat, ff2[0](dataMatrix,i));
-			strcpy(stringFormat,clean);
-		for (int j=1; j<dim[1]; j++){
- 			if (j==colpt){			
-				SetColumnWidth(&maxPoints, stringFormat, "d"); 
-				fprintf(out, stringFormat, ff2[j](dataMatrix,i));
-				strcpy(stringFormat,clean);
+		if (dataMatrix[i].filterbool){ 
+			exist=1;
+			SetColumnWidth(&largestName, stringFormat,"s");			
+			fprintf(out, stringFormat, dataMatrix[i].team);
+			fprintf(out, "%c", ' ');
+			memset(stringFormat,0,6*sizeof(char));
+			for (int j=0; j<dim[1]-1; j++){
+	 			if (j==1){	
+					if (!dataMatrix[i].gbool){				
+						SetColumnWidth(&maxPoints, stringFormat, "d"); 
+						fprintf(out, stringFormat, ff2[j](dataMatrix,i));
+					}
+					else {
+						SetColumnWidth(&maxPoints, stringFormat, "s"); 
+						fprintf(out, stringFormat, dataMatrix[i].gpoints);
+					}
+				}
+				else fprintf(out, shortColumnD, ff2[j](dataMatrix,i));
+				if (j<dim[1]-2) fprintf(out, "%c", ' ');
+				else fprintf(out, "%c", '\n');
+				memset(stringFormat,0,6*sizeof(char));
 			}
-			else fprintf(out, shortColumn, ff2[j](dataMatrix,i));
-			if (j<dim[1]-1) fprintf(out, "%c", ' ');
-			else fprintf(out, "%c", '\n');
 		}	 	
 	}
-	free(clean);
+	if (!exist) fprintf(out, "No existe equipo que cumpla los criterios solicitados\n");
 	free(stringFormat);
+	fclose(out);
 }
 
-/*void n(int max, int *maxPrint){
-	*maxPrint=max+1;	
+void n(int max, int *maxPrint){
+	if (max<=dim[0]) *maxPrint=max;	
 }
 
-void g(char ***dataMatrix, int *dim, int *maxPoint){
-	
-	for (int i=1; i<dim[0]; i++){
-		int z=0;
-		int size=atoi(dataMatrix[i][colpt]);
-		if (*maxPoint<size) *maxPoint= size;
-		if (size>0) {
-			dataMatrix[i][colpt]=realloc(dataMatrix[i][colpt],size*sizeof(char)+1);		
- 			while (z<size){
-				dataMatrix[i][colpt][z]='0';
-				z++;
-			}
-		}
-		else dataMatrix[i][colpt][0]=0;	
+void g(data dataMatrix[]){
+	for (int i=0; i<dim[0]; i++){
+		dataMatrix[i].gbool=1;
+		if (maxPoints<dataMatrix[i].points) maxPoints=dataMatrix[i].points;		
+	}
+
+	for (int i=0; i<dim[0]; i++){
+		dataMatrix[i].gpoints=calloc(maxPoints+1, sizeof(char));
+		for (int j=0; j<dataMatrix[i].points; j++) dataMatrix[i].gpoints[j]='0';	
 	}	 	
-}*/
+}
+
+void f(data dataMatrix[], char *column, char *filter,int (*ff2[])(data[],int)){
+	char *cnum=calloc((int)strlen(filter)+1, sizeof(char));	
+	char *crit=calloc((int)strlen(filter)+1, sizeof(char));
+	int icrit=0;
+	int icnum=0;
+	int colnum=GetColumnIndex(column);
+	if (colnum==-1) {
+		fprintf(stderr, "Columna ingresada: %s es erronea. Se termina el programa.\n",column);
+		exit(colnum);
+	}
+	for (int i=0; i<(int)strlen(filter);i++){ 
+		if(filter[i]=='<' || filter[i]=='>' || filter[i]=='=') crit[icrit++]=filter[i];
+		else cnum[icnum++]=filter[i];
+	}
+	int num= atoi(cnum);
+	
+	for (int i=0; i<dim[0]; i++){
+		if(!strcmp(crit,"<")){
+			if (!(ff2[colnum](dataMatrix,i)<num))  dataMatrix[i].filterbool=0;
+		}
+		else if(!strcmp(crit,"<=")){
+			if (!(ff2[colnum](dataMatrix,i)<=num)) dataMatrix[i].filterbool=0;
+		}
+		else if(!strcmp(crit,">")){
+			if (!(ff2[colnum](dataMatrix,i)>num)) dataMatrix[i].filterbool=0;
+		}		
+		else if(!strcmp(crit,">=")){
+			if (!(ff2[colnum](dataMatrix,i)>=num)) dataMatrix[i].filterbool=0;
+		}		
+		else{
+		 	if (!(ff2[colnum](dataMatrix,i)==num)) dataMatrix[i].filterbool=0;
+		}
+	}	
+
+
+	free(cnum);
+	free(crit);
+}
 
 
 
-
-//int main()
 int main(int argc,char **argv)
 {
 	int nf0=2;
-	void (*ff0[])(char*, int*) = {SetRows,SetColumns};
-	void (*ff1[])(data[], int, char*) = {SetTeam,SetPj,SetPoints,SetPg,SetPe,SetDg,SetGf,SetGv};
+	void (*ff0[])(char*) = {SetRows,SetColumns};
 	int (*ff2[])(data[], int) = {GetPj,GetPoints,GetPg,GetPe,GetDg,GetGf,GetGv,GetPp,GetGc,GetGl};
 	char *fileName = calloc(FILE_LENGTH,sizeof(char));
-	int dim[2]={0};
 	char *outFileName = calloc(FILE_LENGTH,sizeof(char)); 
 	int maxPrint=0;
-
-	//int option=0;
+	int flags[nFlags] ={0};
+	char *** critFlags=calloc(nFlags*1*FILE_LENGTH,sizeof(char));
+	for (int i=0; i<nFlags; i++){
+		critFlags[i]=calloc(1*FILE_LENGTH,sizeof(char));
+ 	}
+	
 	strcpy(fileName,argv[1]);
 	if (!CheckFileExist(fileName)) return 1;
-	for (int i=0; i<nf0;i++) ff0[i](fileName,dim);
+	for (int i=0; i<nf0;i++) ff0[i](fileName);
 	data dataMatrix[dim[0]];
-	CreateArray(fileName, dataMatrix,ff1);
+	for(int i = 0; i < dim[0]; i++)
+		dataMatrix[i].team = calloc(FILE_LENGTH, sizeof(char));
+	CreateArray(fileName, dataMatrix);
 	maxPrint=dim[0];
-	
-	/*while ((option = getopt (argc, argv, "w:gn:")) != -1)
-	    switch (option)
-	      {
-	      case 'w':
-		wflag = 1;
-		break;
-	      case 'g':
-		gflag = 1;
-		break;
-	      case 'n':
-		nvalue = 1;
-		break;
-	      default:
-		fprintf(stderr, "Error: Accion no conocoida --> %c\n", c);
-		return 1;
-	      }*/
+	int option=0;	
+	int argo=0;
+	int arg=0;
+	while ((option = getopt (argc, argv, "o:f:gn:w:")) != -1){
+		switch (option)
+	    	{
+			case 'o':
+				flags[oFlag] = 1;		
+				optind--;
+				arg=0;
+				for( ;optind < argc && *argv[optind] != '-'; optind++){
+					critFlags[oFlag]=realloc(critFlags[oFlag],(arg+1)*FILE_LENGTH*sizeof(char));
+					critFlags[oFlag][arg]=calloc(FILE_LENGTH,sizeof(char));		
+					strcpy(critFlags[oFlag][arg],argv[optind]);
+					arg+=1;       		 
+				}
+				for (int i=0; i<arg; i++) critFlags[oFlag][i]=realloc(critFlags[oFlag][i],(int)strlen(critFlags[oFlag][i])*sizeof(char)); 
+				argo=arg;		
+				break;
+			case 'f':
+				flags[fFlag] = 1;
+				arg=0;		
+				optind--;
+				for( ;optind < argc && argv[optind][0] != '-'; optind++){
+					critFlags[fFlag]=realloc(critFlags[fFlag],(arg+1)*FILE_LENGTH*sizeof(char));
+					critFlags[fFlag][arg]=calloc(FILE_LENGTH,sizeof(char));		
+					strcpy(critFlags[fFlag][arg],argv[optind]);
+					arg+=1;       		 
+				}
+				for (int i=0; i<arg; i++) critFlags[fFlag][i]=realloc(critFlags[fFlag][i],(int)strlen(critFlags[fFlag][i])*sizeof(char)); 		
+				break;
+			case 'g':
+				flags[gFlag] = 1;
+				break;
+			case 'n':
+				flags[nFlag] = 1;
+				critFlags[nFlag][0]=calloc(FILE_LENGTH,sizeof(char));
+				strcpy(critFlags[nFlag][0],optarg);
+				critFlags[nFlag][0]=realloc(critFlags[nFlag][0],(int)strlen(critFlags[nFlag][0])*sizeof(char));
+				break;
+			case 'w':
+				flags[wFlag] = 1;
+				strcpy(outFileName,optarg);
+				break;
+			default:
+				fprintf(stderr, "Error: Accion no conocida --> %c\n", optopt);
+				return 1;
+		}
+	}
+	  
 
-			
-	//g(dataMatrix,dim, &maxPoint);
-	//n(5,&maxPrint);	
-	if (argc>2) w(dataMatrix,argv[2],dim, &maxPrint,ff2);
-	else w(dataMatrix,outFileName,dim, &maxPrint,ff2);
+	//if (flags[oFlag])
+	if (flags[fFlag]) f(dataMatrix,critFlags[fFlag][0],critFlags[fFlag][1],ff2);
+	if (flags[gFlag]) g(dataMatrix);
+	if (flags[nFlag]) n(atoi(critFlags[nFlag][0]),&maxPrint);
+	w(dataMatrix,outFileName, &maxPrint,ff2);
+	if(argo>1) printf("hola");
 	
 	free(fileName);
 	free(outFileName);
-	//free(dataMatrix);
-
+	free(critFlags);
+	for(int i = 0; i < dim[0]; i++) {
+		free(dataMatrix[i].team);
+		if (flags[gFlag]) free(dataMatrix[i].gpoints);
+	}
 
 	return 0;
 }

@@ -3,7 +3,7 @@
 
 //structs
 struct data{
-	char * team;
+	char* team;
 	int pj;
 	int points;
 	int pg;
@@ -14,22 +14,21 @@ struct data{
 	int pp;
 	int gc;
 	int gl;
+	char* gpoints;
+	int gbool;
+	int filterbool;
 
 };
+
+
 typedef struct data data;
 
-int CheckFileExist(char *fileName);
-void SetRows(char *fileName, int *dim);
-void SetColumns(char *fileName, int *dim);
 
-void SetTeam(data dataMatrix[],int line, char *datum);
-void SetPj(data dataMatrix[],int line, char *datum);
-void SetPoints(data dataMatrix[],int line, char *datum);
-void SetPg(data dataMatrix[],int line, char *datum);
-void SetPe(data dataMatrix[],int line, char *datum);
-void SetDg(data dataMatrix[],int line, char *datum);
-void SetGf(data dataMatrix[],int line, char *datum);
-void SetGv(data dataMatrix[],int line, char *datum);
+
+int CheckFileExist(char *fileName);
+void SetRows(char *fileName);
+void SetColumns(char *fileName);
+int GetColumnIndex(char *column);
 int GetPj(data dataMatrix[],int line);
 int GetPoints(data dataMatrix[],int line);
 int GetPg(data dataMatrix[],int line);
@@ -41,15 +40,12 @@ int GetPp(data dataMatrix[],int line);
 int GetGc(data dataMatrix[],int line);
 int GetGl(data dataMatrix[],int line);
 
-
-//void CreateArray(char *fileName, char ***dataMatrix, int *dim, int* biggestName);
-void CreateArray(char *fileName, data dataMatrix[],void (*ff1[])(data[], int, char*));
-void SetColumnNames(char ***dataMatrix,int *dim);
+void CreateArray(char *fileName, data dataMatrix[]);
 void SetColumnWidth(int *biggestName, char *stringFormat, char *type);
-void w(data dataMatrix[], char *outfileName, int *dim, int *maxPrint,int (*ff2[])(data[], int));
-//void w(char ***dataMatrix, char *outfileName, int *dim, int *maxPrint,int *biggestName, int *maxPoint);
-//void n(int max, int *maxPrint);
-//void g(char ***dataMatrix, int *dim,  int *maxPoint);
+void w(data dataMatrix[], char *outfileName, int *maxPrint,int (*ff2[])(data[], int));
+void n(int max, int *maxPrint);
+void g(data dataMatrix[]);
+void f(data dataMatrix[], char *column, char *filter,int (*ff2[])(data[],int));
 
 
 #endif

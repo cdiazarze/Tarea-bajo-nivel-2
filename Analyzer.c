@@ -22,7 +22,9 @@ int dim[2]={0};
 char *allowedFlags[]={"-o","-f","-g","-n","-w"};
 int minFlagsParams[nFlags]={2, 2, 0, 1, 1};
 int maxFlagsParams[nFlags]={1000, 2, 0, 1, 1};
-data *dataMatrix;
+//data *dataMatrix;
+data dataMatrix[1];
+
 
 int CheckFileExist(char *fileName){
 	FILE *in;
@@ -323,14 +325,22 @@ void ChangeRow(data *datum1, data *datum2, int *swap){
 void o(int argo, char **critFlagsO, int (*ff1[])(int,int)){
 	int swap=1;
 	int column=0;
+	int compare=0;
+	int j=0;
 	while (swap){
 		swap=0;		
 		for (int i=1; i<dim[0];i++){
-			for(int j=0; j<argo;j+=2){
+			compare=-1;
+			j=0;
+			while (compare==-1){
 				column=GetColumnIndex(critFlagsO[j]);
-				//fprintf(stderr,"%s", critFlagsO[j+1]);
 				if (ff1[column](i-1,i)==(i-1) && !strcmp(critFlagsO[j+1],"asc")) ChangeRow(&dataMatrix[i-1],&dataMatrix[i],&swap);
-				if (ff1[column](i-1,i)==(i) && !strcmp(critFlagsO[j+1],"desc")) ChangeRow(&dataMatrix[i-1],&dataMatrix[i],&swap);				
+				if (ff1[column](i-1,i)==(i) && !strcmp(critFlagsO[j+1],"desc")) ChangeRow(&dataMatrix[i-1],&dataMatrix[i],&swap);			
+				if (ff1[column](i-1,i)!=-1) compare=0;
+				else {
+					if (j+2<argo) j+=2;
+					else compare=0;
+				}	
 				if (swap) break;
 			}
 			if (swap) break;
@@ -374,6 +384,10 @@ void CheckFlagsParams(int index, int args){
 }
 
 
+void ResizeMatrix(data *dataMatrix, int newLength){
+	data temp[newLength];
+	*dataMatrix=*temp;
+}
 
 
 int main(int argc,char **argv)
@@ -396,14 +410,15 @@ int main(int argc,char **argv)
 	if (!CheckFileExist(fileName)) return 1;
 	
 	for (int i=0; i<nf0;i++) ff0[i](fileName);
-	dataMatrix=malloc(dim[0]*sizeof(data));
+	//dataMatrix=realloc(dataMatrix,dim[0]*sizeof(data));
+	ResizeMatrix(dataMatrix, dim[0]);
 	for(int i = 0; i < dim[0]; i++)
 		dataMatrix[i].team = calloc(FILE_LENGTH, sizeof(char));
 	CreateArray(fileName);
 	maxPrint=dim[0];	
 	
 
-	//lectura de flafs
+	//lectura de flags
 	int arg=0;
 	int index=2; //index para leer los flags
 	int index2=0;
@@ -434,6 +449,7 @@ int main(int argc,char **argv)
 	//Default order
 	char *defaultO[]={"puntos","desc"};
 	o(2, defaultO,ff1);
+	//Flags execution
 	if (flags[oFlag]) o(argFlags[oFlag], critFlags[oFlag],ff1);
 	if (flags[fFlag]) f(critFlags[fFlag][0],critFlags[fFlag][1],ff2);
 	if (flags[gFlag]) g();
@@ -445,7 +461,11 @@ int main(int argc,char **argv)
 	free(fileName);
 	free(outFileName);
 	free(critFlags);
-	free(dataMatrix);
+	//free(dataMatrix);
+	for (int i=0; i<dim[0];i++){
+		free(dataMatrix[i].team);
+		if(dataMatrix[i].gbool) free(dataMatrix[i].gpoints);
+}
 	return 0;
 }
 

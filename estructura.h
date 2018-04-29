@@ -62,6 +62,6 @@ void o(int argo, char **critFlagsO, int (*ff1[])(int,int));
 int GetFlagIndex(char *flag);
 int ReadFlags(int *flags, char *readedFlag);
 void CheckFlagsParams(int index, int args);
-
+void ResizeMatrix(data *dataMatrix, int newLength);
 
 #endif

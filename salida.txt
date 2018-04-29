@@ -1,7 +1,6 @@
-Equipo               pj   puntos                       pg   pe   dg   gf   gv   pp   gc   gl   
-ColoColo             10   0000000000000000000          6    1    5    16   7    3    11   9   
-DeportesAntofagasta  10   000000000000000000           5    3    3    16   6    2    13   10  
-DeportesIquique      10   0000000000                   3    1    -1   12   4    6    13   8   
-Huachipato           10   000000000000000              4    3    6    15   5    3    9    10  
-O'Higgins            10   00000000000000               4    2    4    16   6    4    12   10  
-Palestino            10   000000000000                 3    3    -1   14   5    4    15   9   
+Equipo     pj   puntos  pg   pe   dg   gf   gv   pp   gc   gl   
+Brasil     18   41      12   5    30   41   16   1    11   25  
+Uruguay    18   31      9    4    12   32   5    5    20   27  
+Argentina  18   28      7    7    3    19   11   4    16   8   
+Colombia   18   27      7    6    2    21   4    5    19   17  
+Chile      18   26      8    2    -1   26   12   8    27   14  

@@ -29,23 +29,39 @@ int CheckFileExist(char *fileName);
 void SetRows(char *fileName);
 void SetColumns(char *fileName);
 int GetColumnIndex(char *column);
-int GetPj(data dataMatrix[],int line);
-int GetPoints(data dataMatrix[],int line);
-int GetPg(data dataMatrix[],int line);
-int GetPe(data dataMatrix[],int line);
-int GetDg(data dataMatrix[],int line);
-int GetGf(data dataMatrix[],int line);
-int GetGv(data dataMatrix[],int line);
-int GetPp(data dataMatrix[],int line);
-int GetGc(data dataMatrix[],int line);
-int GetGl(data dataMatrix[],int line);
+int GetPj(int line);
+int GetPoints(int line);
+int GetPg(int line);
+int GetPe(int line);
+int GetDg(int line);
+int GetGf(int line);
+int GetGv(int line);
+int GetPp(int line);
+int GetGc(int line);
+int GetGl(int line);
 
-void CreateArray(char *fileName, data dataMatrix[]);
+void CreateArray(char *fileName);
 void SetColumnWidth(int *biggestName, char *stringFormat, char *type);
-void w(data dataMatrix[], char *outfileName, int *maxPrint,int (*ff2[])(data[], int));
+void w(char *outfileName, int *maxPrint,int (*ff2[])(int));
 void n(int max, int *maxPrint);
-void g(data dataMatrix[]);
-void f(data dataMatrix[], char *column, char *filter,int (*ff2[])(data[],int));
+void g();
+void f(char *column, char *filter,int (*ff2[])(int));
+
+int CompareGames(int datum1, int datum2);
+int ComparePoints(int datum1, int datum2);
+int CompareWins(int datum1, int datum2);
+int CompareDraws(int datum1, int datum2);
+int CompareGoalDif(int datum1, int datum2);
+int CompareGoals(int datum1, int datum2);
+int CompareVGoals(int datum1, int datum2);
+int CompareLost(int datum1, int datum2);
+int CompareAGoals(int datum1, int datum2);
+int CompareLGoals(int datum1, int datum2);
+
+void o(int argo, char **critFlagsO, int (*ff1[])(int,int));
+int GetFlagIndex(char *flag);
+int ReadFlags(int *flags, char *readedFlag);
+void CheckFlagsParams(int index, int args);
 
 
 #endif
